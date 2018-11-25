@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>首页</h1>
+    <div id='app'>
+        <!--<button v-on:click="add">添 加</button><br/>-->
+
+        <!--<button v-on:click="update">修 改</button><br/>-->
+        <a href="http://localhost:8080/user/add">添 加</a><br/>
+        <a href="http://localhost:8080/user/update">修 改</a><br/>
+        <a href="http://localhost:8080/user/delete">删 除</a><br/>
+    </div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        methods:{
+            add: function () {
+                $.ajax({
+                    type: 'post',
+                    dataType: 'json',
+                    url: 'http://localhost:8080/user/add',
+                    success(res){
+                        if(res.code == '0000'){
+                            location.href = 'http://localhost:8080/add.html'
+                        }
+                    }
+                })
+            },
+            update: function () {
+                $.ajax({
+                    type: 'post',
+                    dataType: 'json',
+                    url: 'http://localhost:8080/user/update',
+                    success(res){
+                        if(res.code == '0000'){
+                            location.href = 'http://localhost:8080/update.html'
+                        }
+                    }
+                })
+            }
+        }
+    })
+
+</script>
+</html>

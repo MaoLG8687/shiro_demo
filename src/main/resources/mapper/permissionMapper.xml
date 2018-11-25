@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.cooplan.shiro_demo.dao.PermissionDao">
+
+<!-- 查看用户下的权限-->
+	<select id="selectUserOwnPermission" resultType="Permission">
+		SELECT
+			p. NAME,
+			p.url
+		FROM
+			t_user_permission up
+		RIGHT JOIN t_permission p ON up.permission_id = p.id
+		WHERE
+			up.user_id = (
+				SELECT
+					id
+				FROM
+					t_user
+				WHERE
+					username = #{username}
+			)
+	</select>
+</mapper>

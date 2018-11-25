@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.cooplan.shiro_demo.dao.RoleDao">
+<!--查询用户拥有的角色-->
+	<select id="selectUserOwnRole" resultType="Role">
+		SELECT
+			r. NAME
+		FROM
+			t_user_role ur
+		RIGHT JOIN t_role r ON ur.role_id = r.id
+		WHERE
+			ur.user_id = (
+				SELECT
+					id
+				FROM
+					t_user
+				WHERE
+					username = #{username}
+			)
+	</select>
+</mapper>
