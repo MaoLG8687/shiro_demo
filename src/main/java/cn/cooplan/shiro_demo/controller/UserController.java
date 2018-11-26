@@ -17,11 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/user/")
 public class UserController {
-
+    /**
+     *
+     * @param user
+     * @param remeberMe 是否开启自动登录
+     * @return
+     */
     @RequestMapping("login")
-    Object login(User user){
+    Object login(User user,boolean remeberMe){
         try {
-            UsernamePasswordToken token = new UsernamePasswordToken(user.getUsername(), user.getPassword());
+            UsernamePasswordToken token = new UsernamePasswordToken(user.getUsername(), user.getPassword(), remeberMe);
             Subject subject = SecurityUtils.getSubject();
             subject.login(token);
         } catch (AuthenticationException e) {

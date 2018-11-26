@@ -4,10 +4,13 @@ import cn.cooplan.shiro_demo.exception.DataAccessException;
 import cn.cooplan.shiro_demo.pojo.Permission;
 import cn.cooplan.shiro_demo.util.jdbc.JDBCTemplate;
 import cn.cooplan.shiro_demo.util.jdbc.PermissionMapper;
+import org.apache.shiro.codec.Base64;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +20,7 @@ import org.springframework.context.annotation.DependsOn;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * @Author MaoLG
@@ -25,6 +29,32 @@ import java.util.Map;
 @Configuration
 public class ShiroConfig {
 
+    /**
+     * 设置cookie参数,
+     * @return
+     */
+    @Bean
+    public SimpleCookie remeberMeCookie(){
+        //设置cookie名字
+        SimpleCookie simpleCookie = new SimpleCookie("remeberMe");
+        //设置cookie过期时间
+        simpleCookie.setMaxAge(30);
+        return simpleCookie;
+    }
+
+    /**
+     * 记住我管理器, 这个要注入给securityManager
+     * @return
+     */
+    @Bean
+    public CookieRememberMeManager rememberMeManager(){
+        CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
+        //设置cookie存储格式. 存储的key 和 有效期
+        cookieRememberMeManager.setCookie(remeberMeCookie());
+        //添加对cookie进行加密
+        cookieRememberMeManager.setCipherKey(Base64.decode(String.valueOf(UUID.randomUUID())));
+        return cookieRememberMeManager;
+    }
 
 
     /**
@@ -49,6 +79,8 @@ public class ShiroConfig {
     public DefaultWebSecurityManager securityManager() {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(shiroRealm());
+        //注入记住我管理器
+        securityManager.setRememberMeManager(rememberMeManager());
         return securityManager;
     }
 
@@ -66,6 +98,7 @@ public class ShiroConfig {
 
         //url权限配置, url为controller设置的可访问的路径 ps:url可以使用*(通配符设置)
         Map<String, String> filterChainDefinitionManager = new LinkedHashMap<String, String>();
+
         //可以匿名访问的权限 anon:不登录也可访问
         filterChainDefinitionManager.put("/user/login", "anon");
         //必须登录的权限 authc:必须登录才能访问的权限
